@@ -26,9 +26,26 @@ if(BUILD_TESTING)
   osrf_testing_tools_cpp_require_googletest(VERSION_GTE 1.8)
 
 
-  set(GOOGLE_TEST google_test)
-  add_executable(${GOOGLE_TEST} src/add_gtest.cpp)
-  target_link_libraries(${GOOGLE_TEST} gtest_main)
+  get_target_property(memory_tools_available
+    osrf_testing_tools_cpp::memory_tools LIBRARY_PRELOAD_ENVIRONMENT_IS_AVAILABLE)
+
+  if(memory_tools_available)
+    set(GOOGLE_TEST google_test)
+
+    add_executable(${GOOGLE_TEST} src/add_gtest.cpp)
+    target_link_libraries(${GOOGLE_TEST}
+      gtest_main
+      osrf_testing_tools_cpp::memory_tools
+      )
+
+    # ctestに追加する
+    get_target_property(extra_env_vars
+      osrf_testing_tools_cpp::memory_tools LIBRARY_PRELOAD_ENVIRONMENT_VARIABLE)
+    osrf_testing_tools_cpp_add_test(google_test_tools
+      COMMAND "$<TARGET_FILE:google_test>"
+      ENV ${extra_env_vars}
+      )
+   endif()
 
   ament_lint_auto_find_test_dependencies()
 endif()
