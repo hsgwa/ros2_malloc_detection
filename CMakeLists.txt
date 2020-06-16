@@ -17,6 +17,16 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 
+add_compile_options(-O0 -rdynamic)
+
+set (CMAKE_CXX_FLAGS "-rdynamic")
+
+set(MALLOC_TEST malloc_test)
+add_executable(${MALLOC_TEST} src/main.cpp)
+target_link_libraries(${MALLOC_TEST}
+  osrf_testing_tools_cpp::memory_tools
+  )
+
 include(CTest) # creates BUILD_TESTING option to enable test
 
 if(BUILD_TESTING)
